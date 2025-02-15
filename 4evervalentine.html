@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ping Loves You</title>
+  <style>
+    /* Reset default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: sans-serif;
+      background: #f8f8f8;
+    }
+    /* Full-page container for each section */
+    .container {
+      width: auto;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    /* Fade animations */
+    .fade-out {
+      animation: fadeOut 1s forwards;
+    }
+    .fade-in {
+      animation: fadeIn 1s forwards;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    /* Content page: two columns side by side (no extra gap) */
+    #content {
+      display: flex;
+      gap: 0;
+      max-width: 1200px;
+      width: 100%;
+    }
+    .column {
+      flex: 1;
+    }
+    /* Natural image display */
+    img {
+      display: block;
+      height: auto;
+      max-width: 100%;
+    }
+    /* Card stack container for notes - increased size */
+    .card-stack {
+      position: relative;
+      width: 600px;   /* Increased from 400px */
+      height: 600px;  /* Increased from 400px */
+    }
+    /* Stack notes: all aligned exactly on top of each other */
+    .card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    /* Stacking order: m1 on top, then m2, etc. */
+    #card1 { z-index: 7; }
+    #card2 { z-index: 6; }
+    #card3 { z-index: 5; }
+    #card4 { z-index: 4; }
+    #card5 { z-index: 3; }
+    #card6 { z-index: 2; }
+    #card7 { z-index: 1; }
+    /* Fly-up animation for the card being clicked */
+    @keyframes flyUp {
+      from { transform: translateY(0); opacity: 1; }
+      to   { transform: translateY(-100px); opacity: 0; }
+    }
+    .fly-up {
+      animation: flyUp 0.5s forwards;
+    }
+  </style>
+</head>
+<body>
+  <!-- Front Page -->
+  <div class="container" id="frontContainer">
+    <img src="front.png" id="frontPage" alt="Front Page">
+  </div>
+
+  <!-- Bouquet Page -->
+  <div class="container hidden" id="bouquetContainer">
+    <img src="bouquet.png" id="bouquet" alt="Bouquet">
+  </div>
+
+  <!-- Content Page: Two columns (Left: message.png, Right: stacked notes) -->
+  <div class="container hidden" id="contentContainer">
+    <div id="content">
+      <!-- Left Column: Message -->
+      <div class="column" id="messageColumn">
+        <img src="message.png" alt="Message">
+      </div>
+      <!-- Right Column: Card Stack -->
+      <div class="column" id="notesColumn">
+        <div class="card-stack" id="cardStack">
+          <img src="m1.png" class="card" id="card1" alt="Note 1">
+          <img src="m2.png" class="card" id="card2" alt="Note 2">
+          <img src="m3.png" class="card" id="card3" alt="Note 3">
+          <img src="m4.png" class="card" id="card4" alt="Note 4">
+          <img src="m5.png" class="card" id="card5" alt="Note 5">
+          <img src="m6.png" class="card" id="card6" alt="Note 6">
+          <img src="m7.png" class="card" id="card7" alt="Note 7">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Transition elements
+      const frontContainer = document.getElementById("frontContainer");
+      const frontPage = document.getElementById("frontPage");
+      const bouquetContainer = document.getElementById("bouquetContainer");
+      const bouquet = document.getElementById("bouquet");
+      const contentContainer = document.getElementById("contentContainer");
+
+      // Front → Bouquet transition
+      frontPage.addEventListener("click", function() {
+        frontPage.classList.add("fade-out");
+        setTimeout(() => {
+          frontContainer.classList.add("hidden");
+          bouquetContainer.classList.remove("hidden");
+          bouquet.classList.add("fade-in");
+        }, 1000);
+      });
+
+      // Bouquet → Content transition
+      bouquet.addEventListener("click", function() {
+        bouquet.classList.add("fade-out");
+        setTimeout(() => {
+          bouquetContainer.classList.add("hidden");
+          contentContainer.classList.remove("hidden");
+          contentContainer.classList.add("fade-in");
+        }, 1000);
+      });
+
+      // Card stack behavior: on click, the top card flies up and is removed, revealing the next card
+      const cardStack = document.getElementById("cardStack");
+      const cards = Array.from(document.querySelectorAll(".card"));
+      let currentIndex = 0;
+
+      cardStack.addEventListener("click", function(e) {
+        const topCard = cards[currentIndex];
+        if (e.target !== topCard) return;  // Only act if clicking the top card
+        topCard.classList.add("fly-up");
+        topCard.addEventListener("animationend", function() {
+          topCard.classList.add("hidden");
+          currentIndex++;
+          if (currentIndex >= cards.length) {
+            console.log("All notes have been revealed; last note remains.");
+          }
+        }, { once: true });
+      });
+    });
+  </script>
+</body>
+</html>
